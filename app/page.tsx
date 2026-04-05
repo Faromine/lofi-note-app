@@ -186,7 +186,17 @@ export default function LofiNoteApp() {
 
           {isViewingToday && (
             <form onSubmit={addTask} className="flex gap-2 mb-6 md:mb-8">
-              <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="จดงานหรือเป้าหมาย..." className={`flex-1 border-none rounded-2xl px-4 py-3 md:px-5 md:py-4 outline-none text-sm md:text-base ${isDarkMode ? 'bg-slate-900/50' : 'bg-slate-50/50 shadow-inner'}`} />
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="จดงานหรือตั้งเป้าหมาย..."
+                className={`flex-1 border-none rounded-2xl px-5 py-4 outline-none placeholder:opacity-100 ${
+                  isDarkMode
+                    ? 'bg-slate-900/50 text-slate-100 placeholder:text-slate-400'
+                    : 'bg-white shadow-inner text-slate-800 placeholder:text-slate-500'
+                }`}
+              />
               <button type="submit" className="p-3 md:p-4 bg-slate-900 text-white rounded-2xl hover:bg-blue-600 shadow-lg transition-all"><Plus size={20} className="md:w-6 md:h-6" /></button>
             </form>
           )}
