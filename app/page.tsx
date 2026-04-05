@@ -35,6 +35,7 @@ export default function LofiNoteApp() {
   const [inputValue, setInputValue] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [focusedTaskId, setFocusedTaskId] = useState<number | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<number | null>(null); // ตัวแปรเก็บสถานะการลบ
   
   const [user, setUser] = useState<any>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
@@ -208,7 +209,6 @@ export default function LofiNoteApp() {
               tasksToDisplay.map((task) => (
                 <div key={task.id} className={`group flex flex-col sm:flex-row sm:items-center gap-3 p-4 md:p-5 rounded-3xl border transition-all ${isDarkMode ? 'bg-slate-900/30 border-slate-800' : 'bg-white shadow-sm border-slate-100'}`}>
                   <div className="flex items-start sm:items-center gap-3 flex-1">
-                    {/* ตรงนี้ปลดล็อกให้กด Done ได้ทุกวัน */}
                     <button onClick={() => setTasks(tasks.map(t => t.id === task.id ? {...t, completed: !t.completed, isActive: false} : t))} className="mt-0.5 sm:mt-0 flex-shrink-0">
                       {task.completed ? <CheckCircle2 className="text-green-500" size={20} /> : <Circle className="text-slate-300" size={20} />}
                     </button>
@@ -220,7 +220,6 @@ export default function LofiNoteApp() {
                       {formatSeconds(task.seconds)}
                     </div>
                     <div className="flex items-center gap-1 md:gap-2">
-                      {/* ตรงนี้ปลดล็อกให้เล่น/หยุดเวลาได้ทุกวัน */}
                       {!task.completed && (
                         <>
                           <button onClick={() => setTasks(tasks.map(t => t.id === task.id ? {...t, isActive: !t.isActive} : t))} className="p-1.5 md:p-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100">{task.isActive ? <Pause size={16} /> : <Play size={16} />}</button>
@@ -228,7 +227,7 @@ export default function LofiNoteApp() {
                           <button onClick={() => setFocusedTaskId(task.id)} className="p-1.5 md:p-2 bg-slate-50 text-slate-400 rounded-xl hover:text-indigo-500"><Maximize2 size={16} /></button>
                         </>
                       )}
-                      <button onClick={() => setTasks(tasks.filter(t => t.id !== task.id))} className="p-1.5 md:p-2 text-slate-300 hover:text-red-400"><Trash2 size={16} /></button>
+                      <button onClick={() => setTaskToDelete(task.id)} className="p-1.5 md:p-2 text-slate-300 hover:text-red-400"><Trash2 size={16} /></button>
                     </div>
                   </div>
                 </div>
@@ -268,6 +267,38 @@ export default function LofiNoteApp() {
           </div>
         </div>
       )}
+
+      {/* 🔴 Delete Confirmation Pop-up (เพิ่มใหม่ตรงนี้) */}
+      {taskToDelete !== null && (
+        <div className={`fixed inset-0 z-[300] flex items-center justify-center p-6 backdrop-blur-sm transition-all duration-300 ${isDarkMode ? 'bg-slate-950/60' : 'bg-slate-900/20'}`}>
+          <div className={`w-full max-w-sm rounded-[2rem] p-6 text-center shadow-2xl ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-slate-100'}`}>
+            <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={32} />
+            </div>
+            <h3 className={`text-xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>ต้องการลบ Task นี้จริงหรอ?</h3>
+            <p className="text-sm text-slate-500 mb-6">หากลบแล้ว จะไม่สามารถกู้คืนกลับมาได้นะ</p>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setTaskToDelete(null)} 
+                className={`flex-1 py-3 rounded-xl font-medium transition-all ${isDarkMode ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+              >
+                ยกเลิก
+              </button>
+              <button 
+                onClick={() => {
+                  setTasks(tasks.filter(t => t.id !== taskToDelete));
+                  setTaskToDelete(null);
+                }} 
+                className="flex-1 py-3 rounded-xl font-medium bg-red-500 text-white hover:bg-red-600 transition-all shadow-lg shadow-red-500/30"
+              >
+                ลบเลย
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
